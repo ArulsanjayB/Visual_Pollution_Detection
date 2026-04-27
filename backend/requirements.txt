@@ -1,0 +1,38 @@
+# ═══════════════════════════════════════════════════════════════
+# Backend + inference runtime dependencies
+# ═══════════════════════════════════════════════════════════════
+# NOTE: PyTorch is installed separately by setup.bat using the
+# official PyTorch CUDA wheel index. Do NOT add torch here.
+# ═══════════════════════════════════════════════════════════════
+
+# ── Numpy MUST be pinned to 1.x because PyTorch 2.2.2 was compiled
+#    against NumPy 1.x. Installing NumPy 2.x will break everything.
+#    Keep this line at the very top so pip resolves it first.
+numpy==1.26.4
+
+# ── Web stack ─────────────────────────────────────────────────
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-multipart==0.0.10
+pydantic==2.9.2
+pydantic-settings==2.5.2
+python-dotenv==1.0.1
+aiofiles==24.1.0
+httpx==0.27.2
+
+# ── Image processing ──────────────────────────────────────────
+Pillow==10.4.0
+opencv-python==4.10.0.84
+
+# ── ML / Inference (torch installed separately with CUDA) ────
+ultralytics==8.2.103
+scipy==1.13.1
+
+# ── Explainable AI ────────────────────────────────────────────
+lime==0.2.0.1
+shap==0.46.0
+scikit-image==0.24.0
+scikit-learn==1.5.2
+
+# ── PDF reports ───────────────────────────────────────────────
+reportlab==4.2.5

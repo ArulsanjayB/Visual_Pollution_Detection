@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicLens | Visual Pollution Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-leaf text-gradient"></i>
+                <h2>Civic<span class="text-gradient">Lens</span></h2>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-tab="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Report Issue</li>
+                <li data-tab="citizen-history"><i class="fa-solid fa-clock-rotate-left"></i> My Reports</li>
+                <li data-tab="municipal-dashboard"><i class="fa-solid fa-chart-pie"></i> Municipal Hub</li>
+            </ul>
+            <div class="user-role-toggle">
+                <span>Role: <strong id="current-role">Citizen</strong></span>
+                <button id="toggle-role-btn" class="btn-secondary btn-small">Switch to Admin</button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="content-area">
+            <header>
+                <h1 id="page-title">Report Visual Pollution</h1>
+                <div class="header-status" id="system-status">
+                    <span class="status-dot"></span> System Online
+                </div>
+            </header>
+
+            <!-- TAB 1: Upload / Report Issue -->
+            <section id="tab-upload" class="tab-content active">
+                <div class="upload-card glass-panel">
+                    <h3>Submit a New Report</h3>
+                    <p class="subtitle">Help keep our city clean. AI will analyze your image automatically.</p>
+                    
+                    <form id="upload-form">
+                        <div class="drop-zone" id="drop-zone">
+                            <i class="fa-solid fa-image"></i>
+                            <p>Drag & drop image here or <span>browse</span></p>
+                            <input type="file" id="image-input" accept="image/jpeg, image/png" hidden>
+                            <div id="image-preview" class="preview-container hidden">
+                                <img src="" alt="Preview">
+                                <button type="button" id="remove-image" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="location">Location (Address/Coordinates)</label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <input type="text" id="location" placeholder="e.g. 123 Main St or GPS coords" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="xai-mode">Explainable AI Mode</label>
+                                <select id="xai-mode">
+                                    <option value="gradcam">Grad-CAM (Fastest)</option>
+                                    <option value="lime">LIME (Semantic)</option>
+                                    <option value="zoolime">ZooLime (Fusion - Recommended)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Additional Notes (Optional)</label>
+                            <textarea id="description" rows="3" placeholder="Any extra details about the issue..."></textarea>
+                        </div>
+
+                        <button type="submit" id="submit-btn" class="btn-primary" disabled>
+                            <i class="fa-solid fa-paper-plane"></i> Submit Report
+                        </button>
+                    </form>
+
+                    <!-- Results Section (Hidden until submit) -->
+                    <div id="result-section" class="result-section hidden">
+                        <hr>
+                        <h4>AI Analysis Results</h4>
+                        <div class="result-grid">
+                            <div class="result-box primary">
+                                <h5>Detected Class</h5>
+                                <div class="result-value" id="res-class">Pothole</div>
+                            </div>
+                            <div class="result-box">
+                                <h5>Confidence</h5>
+                                <div class="result-value" id="res-conf">98.5%</div>
+                            </div>
+                            <div class="result-box" id="res-sev-box">
+                                <h5>Severity</h5>
+                                <div class="result-value" id="res-sev">HIGH</div>
+                            </div>
+                        </div>
+                        
+                        <div class="xai-container">
+                            <h5>XAI Visualization (<span id="res-xai-method">Grad-CAM</span>)</h5>
+                            <div class="xai-image-wrapper">
+                                <img id="res-xai-img" src="" alt="XAI Heatmap">
+                                <div id="xai-loading" class="xai-overlay hidden">
+                                    <div class="spinner"></div>
+                                    <p>Generating deep explanation...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: Citizen History -->
+            <section id="tab-citizen-history" class="tab-content">
+                <div class="history-stats glass-panel">
+                    <div class="stat-card">
+                        <i class="fa-solid fa-file-contract text-gradient"></i>
+                        <div class="stat-info">
+                            <h3>Total Reports</h3>
+                            <p id="cit-total">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-check-circle text-gradient"></i>
+                        <div class="stat-info">
+                            <h3>Resolved</h3>
+                            <p id="cit-resolved">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-coins text-gradient"></i>
+                        <div class="stat-info">
+                            <h3>Reward Tokens</h3>
+                            <p id="cit-tokens">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reports-list glass-panel">
+                    <h3>Recent Reports</h3>
+                    <div class="table-responsive">
+                        <table id="citizen-reports-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Issue</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Severity</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: Municipal Dashboard -->
+            <section id="tab-municipal-dashboard" class="tab-content">
+                <div class="municipal-grid">
+                    <div class="chart-panel glass-panel">
+                        <h3>Issue Distribution</h3>
+                        <canvas id="classChart"></canvas>
+                    </div>
+                    <div class="chart-panel glass-panel">
+                        <h3>Severity Breakdown</h3>
+                        <canvas id="severityChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="queue-panel glass-panel mt-4">
+                    <div class="queue-header">
+                        <h3>Action Queue</h3>
+                        <div class="filters">
+                            <select id="filter-status">
+                                <option value="">All Statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                            <button class="btn-secondary btn-small" id="refresh-queue"><i class="fa-solid fa-rotate-right"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table id="municipal-queue-table" class="hover-table">
+                            <thead>
+                                <tr>
+                                    <th>Priority Score</th>
+                                    <th>Class</th>
+                                    <th>Severity</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for viewing report details -->
+    <div id="report-modal" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-title">Report Details</h2>
+            <div class="modal-body" id="modal-body">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
