@@ -1,0 +1,7 @@
+# Extras needed only for training (on top of backend/requirements.txt)
+albumentations==1.4.18
+pyyaml==6.0.2
+tqdm==4.66.5
+matplotlib==3.9.2
+seaborn==0.13.2
+pandas==2.2.3

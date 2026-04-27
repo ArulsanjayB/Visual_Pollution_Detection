@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "CivicLens",
+    "slug": "civiclens",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "android": {
+      "package": "com.civiclens.app",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.INTERNET"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "com.civiclens.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "CivicLens uses your camera to photograph pollution.",
+        "NSPhotoLibraryUsageDescription": "CivicLens uses your photo library to select pollution images.",
+        "NSLocationWhenInUseUsageDescription": "CivicLens uses your location to tag pollution reports."
+      }
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "CivicLens uses your camera to photograph pollution."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "CivicLens uses your photos to select pollution images."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "CivicLens uses your location to tag reports."
+        }
+      ]
+    ],
+    "extra": {
+      "apiBaseUrl": "http://10.122.188.25:8000"
+    }
+  }
+}
